@@ -6,6 +6,8 @@ import cookieParser from "cookie-parser";
 
 import db from "./config/dbConfig.js";
 import authRouter from "./routes/authRouter.js";
+import productRouter from "./routes/productRouter.js";
+import categoryRouter from "./routes/categoryRouter.js";
 
 dotenv.config();
 
@@ -27,6 +29,8 @@ app.use(cookieParser());
 
 // Routes
 app.use("/api/auth", authRouter);
+app.use("/api/",productRouter)
+app.use("/api/",categoryRouter)
 
 // Health check
 app.get("/", (req, res) => {

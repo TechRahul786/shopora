@@ -65,7 +65,7 @@ const Category = () => {
     getData();
   },[getData,newAdded]);
 
-  // Delete handler placeholder
+  // Delete handler
   const handleremoveCategory = async (id) => {
     try {
     console.log("Deleting category ID:", id);
@@ -84,11 +84,10 @@ const Category = () => {
   }
   };
 
-  // Edit handler placeholder
+  // Edit handler
   const updateCategory = (id) => {
-    // Add your delete API logic here.
+    
     setUpdate(id)
-    //setFlag(false)
     handleOpenModal()
 
     console.log("Category ID to update:", id);

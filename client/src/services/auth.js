@@ -1,4 +1,4 @@
-import api from "../../services/api"
+import api from "./api"
 export const adminLogin = async (form) =>{
     const response = await api.post('/auth/login',form)
     const user = response.data

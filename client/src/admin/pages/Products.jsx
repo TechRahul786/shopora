@@ -7,7 +7,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { getProducts } from "../services/product";
+import { getProducts } from "../../services/product.js";
 
 
 const Products = () => {

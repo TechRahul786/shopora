@@ -11,6 +11,7 @@ import Cart from "./pages/Cart";
 import Profile from "./pages/Profile";
 import Products from "./admin/pages/Products";
 import AddProduct from "./admin/pages/AddProduct";
+import Category from "./admin/pages/Category";
 
 
 
@@ -39,6 +40,7 @@ function App() {
               <Route path="/admin" element={<AdminLayout />}>
                 <Route path="products" element={<Products/>}/>
                 <Route path="add-product" element={<AddProduct/>}/>
+                <Route path="categories" element={<Category/>}/>
               </Route>
           </Route>
         

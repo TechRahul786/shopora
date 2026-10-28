@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { adminLogin } from "../../admin/services/auth";
+import { adminLogin } from "../../services/auth";
 import { useDispatch } from "react-redux";
 import { clearState, setUser } from "../store/slice/authSclice";
 import { useNavigate } from "react-router-dom";

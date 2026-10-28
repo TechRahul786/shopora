@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { getCategory } from "../../services/category";
+import { getCategory,removeCategory } from "../../services/category";
 
 import {
   useReactTable,
@@ -17,16 +17,19 @@ import {
   FiImage,
   FiTrash2,
   FiEdit,
-  FiPlus,
 } from "react-icons/fi";
 import AddCategory from "../components/AddCategory";
+import EditCategory from "../components/EditCategory";
 
 const Category = () => {
   const [data, setData] = useState([]);
+  const [newAdded , setNewAdded] = useState(false)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [globalFilter, setGlobalFilter] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [update,setUpdate] = useState('')
+  const [flag,setFlag] = useState(false)
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -60,12 +63,35 @@ const Category = () => {
 
   useEffect(() => {
     getData();
-  }, [getData]);
+  },[getData,newAdded]);
 
   // Delete handler placeholder
-  const removeCategory = (id) => {
+  const handleremoveCategory = async (id) => {
+    try {
+    console.log("Deleting category ID:", id);
+
+    const res = await removeCategory(id);
+
+    if (res.success === true) {
+      setNewAdded((prev) => !prev);
+      console.log("Category deleted successfully:", res);
+    }
+  } catch (error) {
+    console.error(
+      "Delete category error:",
+      error.response?.data || error.message
+    );
+  }
+  };
+
+  // Edit handler placeholder
+  const updateCategory = (id) => {
     // Add your delete API logic here.
-    console.log("Category ID to delete:", id);
+    setUpdate(id)
+    //setFlag(false)
+    handleOpenModal()
+
+    console.log("Category ID to update:", id);
   };
 
   // Table columns
@@ -136,7 +162,7 @@ const Category = () => {
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={() => removeCategory(row.original._id)}
+              onClick={() =>updateCategory(row.original._id)}
               className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600 transition hover:bg-red-100"
             >
               <FiEdit size={15} />
@@ -145,7 +171,7 @@ const Category = () => {
 
             <button
               type="button"
-              onClick={() => removeCategory(row.original._id)}
+              onClick={() => handleremoveCategory(row.original._id)}
               className="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-100"
             >
               <FiTrash2 size={15} />
@@ -235,8 +261,9 @@ const Category = () => {
             </div>
 
             <div className="relative w-full sm:max-w-xs">
+              
               <button
-                onClick={handleOpenModal}
+                onClick={()=>{setFlag(true),handleOpenModal}}
                 className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
               >
                 + Add Category
@@ -363,7 +390,7 @@ const Category = () => {
                     >
                       <div className="mb-6 flex items-center justify-between">
                         <h2 className="text-xl font-bold text-gray-800">
-                          Add Category
+                          {flag?('Add Category'):('Edit Category')}
                         </h2>
 
                         <button
@@ -376,7 +403,7 @@ const Category = () => {
                         </button>
                       </div>
 
-                      <AddCategory/>
+                      {flag?(<AddCategory setNewAdded={setNewAdded} handleCloseModal={handleCloseModal}/>):(<EditCategory  setNewAdded={setNewAdded}  update={update} onClose={handleCloseModal}/>)}     
 
                       <div className="flex justify-end gap-3">
                         <button

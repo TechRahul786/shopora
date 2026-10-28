@@ -22,6 +22,29 @@ export const getCategory = async (req, res, next) => {
   }
 };
 
+// GET: Fetch categories by Id
+export const getByIdCategory = async (req, res, next) => {
+  const id = req.params.id
+  try {
+    const categories = await Category.findById(id)
+
+    return res.status(200).json({
+      success: true,
+      message: categories.length
+        ? "Categories fetched successfully."
+        : "No categories found.",
+      count: categories.length,
+      data: categories,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+
 // POST: Add a new category
 export const addCategory = async (req, res, next) => {
   try {

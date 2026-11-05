@@ -5,6 +5,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa6";
+import { BsStars } from "react-icons/bs";
 
 import ProductCard from "./common/ProductCard";
 
@@ -30,9 +31,13 @@ const ProductSlider = ({ products = [] }) => {
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-gray-800 sm:text-xl">
+            <div className="flex gap-2 items-center">
+              <h2 className="text-lg font-bold text-gray-800 sm:text-xl">
               Top Picks for You
             </h2>
+            <BsStars className="text-amber-500 size-6"/>
+            </div>
+            
             <p className="mt-1 text-sm text-gray-500">
               Discover products you might like
             </p>
@@ -63,12 +68,12 @@ const ProductSlider = ({ products = [] }) => {
           {/* Product Slider */}
           <div
             ref={sliderRef}
-            className="flex w-full gap-4 overflow-x-auto scroll-smooth pb-4 scrollbar-hide snap-x snap-mandatory"
+            className="flex w-full gap-4 overflow-x-auto scroll-smooth pb-1 scrollbar-none snap-x snap-mandatory"
           >
             {Array.from({ length: 10 }).map((_,index) => (
               <div
                 // key={product._id}
-                className="w-[200px] shrink-0 snap-start sm:w-[220px] lg:w-[230px]"
+                className="w-auto shrink-0 snap-start sm:w-auto lg:w-auto"
               >
                 <ProductCard  />
               </div>

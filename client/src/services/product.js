@@ -13,7 +13,7 @@ export const getProductsById = async (id) =>{
 }
 
 export const addProduct = async(form) =>{
-    const response = await api.post('addProduct',form)
+    const response = await api.post('products',form)
     return response.data
 }
 

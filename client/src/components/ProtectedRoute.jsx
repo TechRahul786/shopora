@@ -13,7 +13,7 @@ const ProtectedRoute = ({ allowRoles }) => {
   }
 
   if (!user) {
-    const loginPath = allowRoles?.includes("admin") ? "/admin/login" : "/login";
+    const loginPath = allowRoles?.includes("admin") ? "/admin/login" : "/auth";
     return <Navigate to={loginPath} state={{ from: location }} replace />;
   }
 

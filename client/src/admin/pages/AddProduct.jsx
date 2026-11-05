@@ -25,7 +25,7 @@ const AddProduct = () => {
   });
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState("");
-  const [loading, setLoading] = useState(false); // Optional: Loading state during upload
+  const [loading, setLoading] = useState(false); 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({

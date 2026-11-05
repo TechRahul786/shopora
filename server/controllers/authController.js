@@ -57,36 +57,37 @@ export const registerUser = async (req, res, next) => {
 
 //Login
 
-export const login = async (req,res,next) =>{
-  console.log(req.body)
-   try {
-     const {email,password} = req.body
- if (!email || !password) {
+export const login = async (req, res, next) => {
+  console.log(req.body);
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
       return res.status(400).json({
         success: false,
         message: "Email and password are required",
       });
     }
 
-    const normalizedEmail = email.trim().toLowerCase()
+    const normalizedEmail = email.trim().toLowerCase();
 
-    const user = await User.findOne({email:normalizedEmail}).select('+password')
-    if(!user){
-        return res.status(400).json({
-            success:false,
-            message:'Invalid email or password'
-        })
+    const user = await User.findOne({ email: normalizedEmail }).select(
+      "+password",
+    );
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email or password",
+      });
     }
 
-    const isPasswordMatched = await bcrypt.compare(password,user.password)
+    const isPasswordMatched = await bcrypt.compare(password, user.password);
 
-    if(!isPasswordMatched){
-       return res.status(400).json({
-            success:false,
-            message:'Invalid email or password'
-        }) 
+    if (!isPasswordMatched) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email or password",
+      });
     }
-
 
     if (!user.isActive) {
       return res.status(403).json({
@@ -94,36 +95,36 @@ export const login = async (req,res,next) =>{
         message: "Your account is inactive",
       });
     }
-    setTokenCookie(res,user._id)
-    
+    setTokenCookie(res, user._id);
+
     res.status(200).json({
-        success: true,
+      success: true,
       message: "Login successful",
-        user: {
+      user: {
         id: user._id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
         role: user.role,
       },
-    })
-   } catch (error) {
-        return res.status(500).json({
-            success:false,
-            message:"Internal server error"
-        })
-   }
-}
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
 
 //Logout
-export const logout = (req,res) =>{
-    res.clearCookie('token',{
-        httpOnly:true,
-        secure:process.env.NODE_ENV === "production",
-        sameSite:'lax'
-    })
-    return res.status(200).json({
-        success:true,
-        message:'Logout successful'
-    })
-}
+export const logout = (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+  });
+  return res.status(200).json({
+    success: true,
+    message: "Logout successful",
+  });
+};

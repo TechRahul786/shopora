@@ -12,6 +12,9 @@ import Profile from "./pages/Profile";
 import Products from "./admin/pages/Products";
 import AddProduct from "./admin/pages/AddProduct";
 import Category from "./admin/pages/Category";
+import Dashboard from "./admin/pages/Dashboard";
+import AuthLayout from "./components/layout/AuthLayout";
+import Home from "./pages/Home";
 
 
 
@@ -19,14 +22,15 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<UserLayout />}>
-          <Route path="login" element={<Login />} />
+        <Route path="/auth" element={<AuthLayout />}>
+          <Route path="/auth" element={<Login />} />
           <Route path="register" element={<Register />} />
         </Route>
 
         {/* Customer-only pages */}
         <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
           <Route path="/" element={<UserLayout />}>
+            <Route path="/" element={<Home/>}/>
             <Route path="cart" element={<Cart />} />
             <Route path="profile" element={<Profile />} />
           </Route>
@@ -38,6 +42,7 @@ function App() {
            {/* Admin-only pages */}
           <Route element={<ProtectedRoute allowRoles={['admin']}/>}>
               <Route path="/admin" element={<AdminLayout />}>
+                <Route path="/admin" element={<Dashboard/>}/>
                 <Route path="products" element={<Products/>}/>
                 <Route path="add-product" element={<AddProduct/>}/>
                 <Route path="categories" element={<Category/>}/>

@@ -7,8 +7,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { getProducts } from "../../services/product.js";
-
+import { FiTrash2, FiEdit } from "react-icons/fi";
+import { getProducts, removeProduct } from "../../services/product.js";
+import EditProduct from "../components/EditProduct.jsx";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -16,26 +17,61 @@ const Products = () => {
   const [sorting, setSorting] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-            
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editId, setEditId] = useState("")
+  const [deleted,setDeleted] = useState(false)
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleUpdateProduct = (id) => {
+    setEditId(id)
+    handleOpenModal();
+  };
+
+  const handleRemoveProduct = async (id) => {
+    try {
+      setLoading(true);
+        setError("");
+        const message = await removeProduct(id)
+        console.log("deleted message",message)
+        if(message.success){
+          setLoading(false)
+          setDeleted(true)
+        }else{
+          setError(message.message);
+           setLoading(true)
+          setDeleted(false)
+        }
+        setLoading(false)
+    } catch (error) {
+      
+    }
+
+  };
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
         setError("");
 
-        const data = await getProducts()
-        console.log(data)
+        const data = await getProducts();
+        console.log(data);
 
         // Supports either an array or common API response formats.
         const productList = Array.isArray(data)
           ? data
-          : data.products ?? data.data ?? [];
+          : (data.products ?? data.data ?? []);
 
         setProducts(productList);
       } catch (err) {
-        setError(
-          err.response?.data?.message || "Failed to load products."
-        );
+        setError(err.response?.data?.message || "Failed to load products.");
       } finally {
         setLoading(false);
       }
@@ -54,9 +90,7 @@ const Products = () => {
           const product = row.original;
 
           const image =
-            product.image ||
-            product.thumbnail ||
-            product.images?.[0];
+            product.image || product.thumbnail || product.images?.[0];
 
           return image ? (
             <img
@@ -117,8 +151,34 @@ const Products = () => {
           );
         },
       },
+      {
+        id: "action",
+        header: "Action",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => handleUpdateProduct(row.original._id)}
+              className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600 transition hover:bg-red-100"
+            >
+              <FiEdit size={15} />
+              Edit
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleRemoveProduct(row.original._id)}
+              className="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-100"
+            >
+              <FiTrash2 size={15} />
+              Delete
+            </button>
+          </div>
+        ),
+      },
     ],
-    []
+    [],
   );
 
   const table = useReactTable({
@@ -136,11 +196,7 @@ const Products = () => {
     getPaginationRowModel: getPaginationRowModel(),
     globalFilterFn: (row, columnId, filterValue) => {
       const product = row.original;
-      const searchableText = [
-        product.name,
-        product.title,
-        product.category,
-      ]
+      const searchableText = [product.name, product.title, product.category]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
@@ -182,9 +238,7 @@ const Products = () => {
       {/* Page heading */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Manage Products
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900">Manage Products</h1>
 
           <p className="mt-1 text-sm text-gray-500">
             View and manage your store products.
@@ -193,9 +247,7 @@ const Products = () => {
 
         <div className="rounded-lg bg-white px-4 py-3 shadow-sm">
           <span className="text-sm text-gray-500">Total products: </span>
-          <span className="font-bold text-gray-900">
-            {products.length}
-          </span>
+          <span className="font-bold text-gray-900">{products.length}</span>
         </div>
       </div>
 
@@ -218,10 +270,7 @@ const Products = () => {
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      className="px-6 py-4 font-semibold"
-                    >
+                    <th key={header.id} className="px-6 py-4 font-semibold">
                       {header.isPlaceholder ? null : (
                         <button
                           type="button"
@@ -231,7 +280,7 @@ const Products = () => {
                         >
                           {flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
 
                           {{
@@ -249,18 +298,12 @@ const Products = () => {
             <tbody className="divide-y divide-gray-100">
               {table.getRowModel().rows.length > 0 ? (
                 table.getRowModel().rows.map((row) => (
-                  <tr
-                    key={row.id}
-                    className="transition hover:bg-gray-50"
-                  >
+                  <tr key={row.id} className="transition hover:bg-gray-50">
                     {row.getVisibleCells().map((cell) => (
-                      <td
-                        key={cell.id}
-                        className="px-6 py-4 text-gray-600"
-                      >
+                      <td key={cell.id} className="px-6 py-4 text-gray-600">
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </td>
                     ))}
@@ -278,6 +321,13 @@ const Products = () => {
               )}
             </tbody>
           </table>
+          {isModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+              <div className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
+                <EditProduct editId={editId} handleCloseModal={handleCloseModal}/>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Pagination */}

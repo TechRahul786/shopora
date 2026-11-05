@@ -1,28 +1,61 @@
 import { Outlet } from "react-router-dom";
+import Header from "../Header";
+import Navigation from "./Navigation";
+import { useState } from "react";
+import Footer from "../Footer";
 
 const UserLayout = () => {
+  const [mobileNav,setMobileNav] = useState(false)
+  
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
-        <nav className="mx-auto flex max-w-7xl items-center justify-between p-4">
-          <a href="/" className="text-2xl font-bold text-indigo-600">
-            MyStore
-          </a>
-
-          <div className="flex gap-5">
-            <a href="/">Home</a>
-            <a href="/products">Products</a>
-            <a href="/cart">Cart</a>
-            <a href="/my-account">My Account</a>
-          </div>
-        </nav>
-      </header>
-
+      <Header setMobileNav={setMobileNav} mobileNav={mobileNav}/>
+      <Navigation categories={categories} mobileNav={mobileNav}/>
       <main className="mx-auto max-w-7xl p-4">
         <Outlet />
       </main>
+      <Footer/>
     </div>
   );
 };
 
 export default UserLayout;
+
+const categories = [
+  {
+    _id: "1",
+    name: "Electronics"
+  },
+  {
+    _id: "2",
+    name: "Home Furniture and Decoration"
+  },
+  {
+    _id: "3",
+    name: "Fashion"
+  },
+  {
+    _id: "1",
+    name: "Electronics"
+  },
+  {
+    _id: "2",
+    name: "Home Furniture and Decoration"
+  },
+  {
+    _id: "3",
+    name: "Fashion"
+  },
+  {
+    _id: "1",
+    name: "Electronics"
+  },
+  {
+    _id: "2",
+    name: "Home Furniture and Decoration"
+  },
+  {
+    _id: "3",
+    name: "Fashion"
+  }
+]

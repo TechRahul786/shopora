@@ -9,7 +9,7 @@ authRouter.post('/login',login)
 authRouter.post('/logout',logout)
 authRouter.get('/me',protect,(req,res)=>{
     return res.status(200).json({success:true,
-        message:{firstName:req.user.firstName,id:req.user.id}
+        message:{firstName:req.user.firstName,id:req.user.id,role:req.user.role}
     })
 })
 

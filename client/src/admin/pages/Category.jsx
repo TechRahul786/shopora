@@ -32,6 +32,7 @@ const Category = () => {
   const [flag,setFlag] = useState(false)
 
   const handleOpenModal = () => {
+    console.log('handleOpenModal')
     setIsModalOpen(true);
   };
 
@@ -83,11 +84,13 @@ const Category = () => {
     );
   }
   };
-
+  console.log("flag",flag)
+  console.log("Modal",isModalOpen)
   // Edit handler
   const updateCategory = (id) => {
     
     setUpdate(id)
+    setFlag(false)
     handleOpenModal()
 
     console.log("Category ID to update:", id);
@@ -262,7 +265,7 @@ const Category = () => {
             <div className="relative w-full sm:max-w-xs">
               
               <button
-                onClick={()=>{setFlag(true),handleOpenModal}}
+                onClick={()=>{handleOpenModal(),setFlag(true)}}
                 className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
               >
                 + Add Category
@@ -384,7 +387,7 @@ const Category = () => {
                     onClick={handleCloseModal}
                   >
                     <div
-                      className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl"
+                      className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="mb-6 flex items-center justify-between">

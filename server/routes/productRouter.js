@@ -1,12 +1,25 @@
-import express from "express"
-import {adminOnly} from '../middlewares/authMiddleware.js'
-import { addProduct, getProduct, getProductByCategory, getProductById } from "../controllers/productController.js"
+import express from "express";
+import {
+  addProduct,
+  getProduct,
+  getProductById,
+  getProductByCategory,
+  editProduct,
+  removeProduct,
+} from "../controllers/productController.js";
 
-const productRouter = express.Router()
+const router = express.Router();
 
-productRouter.get('/products',getProduct)
-productRouter.get('/product/:id',getProductById)
-productRouter.get('/productByCategory/:id',getProductByCategory)
-productRouter.post('/addProduct',addProduct)
+router.get("/products", getProduct);
 
-export default productRouter
+router.get("/products/:id", getProductById);
+
+router.get("/products/category/:id", getProductByCategory);
+
+router.post("/products", addProduct);
+
+router.put("/products/:id", editProduct);
+
+router.delete("/products/:id", removeProduct);
+
+export default router;

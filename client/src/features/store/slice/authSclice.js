@@ -7,7 +7,6 @@ export const checkAuth = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get("/auth/me");
-      console.log("checkAuth",response)
       return response.data.message;
       
     } catch (error) {
@@ -20,7 +19,6 @@ export const checkAuth = createAsyncThunk(
 
 const authSlice = createSlice({
   name: "auth",
-
   initialState: {
     user: null,
     loading: true,

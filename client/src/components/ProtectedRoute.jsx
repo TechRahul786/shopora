@@ -5,15 +5,12 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 const ProtectedRoute = ({ allowRoles }) => {
   const { user, loading } = useSelector((state) => state.auth);
   const location = useLocation();
-  console.log("User:", user);
-  console.log("Loading:", loading);
-  console.log("Allowed roles:", allowRoles);
   if (loading) {
     return <div className="p-8 text-center">Checking authentication...</div>;
   }
 
-  if (!user) {
-    const loginPath = allowRoles?.includes("admin") ? "/admin/login" : "/auth";
+ const loginPath = allowRoles?.includes("admin") ? "/admin/login" : "/auth";
+  if (!user && location.pathname !== loginPath) {
     return <Navigate to={loginPath} state={{ from: location }} replace />;
   }
 

@@ -6,7 +6,6 @@ export const getProducts = async() =>{
 }
 
 export const getProductsById = async (id) =>{
-    console.log('getProductsById',id)
     const response = await api.get(`products/${id}`)
     const product = response.data
     return product.data

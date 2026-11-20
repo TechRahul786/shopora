@@ -21,6 +21,7 @@ const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [loading,setLoading] = useState(false)
 
   const changeHandle = (e) => {
     const { name, value } = e.target;
@@ -38,7 +39,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setLoading(true)
     let newErrors = {
       email: "",
       password: "",
@@ -58,12 +59,13 @@ const Login = () => {
     setError(newErrors);
 
     const res = await login(form);
-          console.log(res);
     if (isValid) {
       if (!res.success) {
         newErrors.finalsubmit = res.message;
         setError(newErrors);
+        setLoading(false)
       }
+      setLoading(false)
       setSubmitted(true);
       setForm({
         firstName: "",
@@ -86,7 +88,6 @@ const Login = () => {
 
       navigate("/");
       setSubmitted(true);
-      console.log("Login Data:", form);
     } else {
       setSubmitted(false);
     }
@@ -180,12 +181,20 @@ const Login = () => {
           </div>
 
           {/* Submit Button */}
+          {
+            loading?( <button
+            type="button"
+            className="w-full mt-2 py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-200 transition-all duration-200 cursor-pointer active:scale-[0.98]"
+          >
+            Loading ...
+          </button>):(
+          
           <button
             type="submit"
             className="w-full mt-2 py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-200 transition-all duration-200 cursor-pointer active:scale-[0.98]"
           >
             Sign In
-          </button>
+          </button>)}
         </form>
 
         {/* Footer / Switch to Register */}

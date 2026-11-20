@@ -15,6 +15,10 @@ import Category from "./admin/pages/Category";
 import Dashboard from "./admin/pages/Dashboard";
 import AuthLayout from "./components/layout/AuthLayout";
 import Home from "./pages/Home";
+import ProductDetails from "./pages/ProductDetails";
+import Checkout from "./pages/Checkout";
+import OrderSuccess from "./pages/OrderSuccess";
+import Orders from "./pages/Orders";
 
 
 
@@ -27,12 +31,21 @@ function App() {
           <Route path="register" element={<Register />} />
         </Route>
 
+         <Route>
+          <Route path="/" element={<UserLayout />}>
+            <Route path="/" element={<Home/>}/>
+            <Route path="product-details/:id" element={<ProductDetails/>}/>
+          </Route>
+        </Route>
+
         {/* Customer-only pages */}
         <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
           <Route path="/" element={<UserLayout />}>
-            <Route path="/" element={<Home/>}/>
             <Route path="cart" element={<Cart />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="orders" element={<Orders/>}/>
+            <Route path="checkout" element={<Checkout/>}/>
+            <Route path="order-success" element={<OrderSuccess />} />
           </Route>
         </Route>
 

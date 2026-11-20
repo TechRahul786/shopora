@@ -12,6 +12,7 @@ import ProductCard from "./common/ProductCard";
 const ProductSlider = ({ products = [] }) => {
   const sliderRef = useRef(null);
 
+
   const scrollSlider = (direction) => {
     if (!sliderRef.current) return;
 
@@ -70,12 +71,12 @@ const ProductSlider = ({ products = [] }) => {
             ref={sliderRef}
             className="flex w-full gap-4 overflow-x-auto scroll-smooth pb-1 scrollbar-none snap-x snap-mandatory"
           >
-            {Array.from({ length: 10 }).map((_,index) => (
+            {products.map((item,index) => (
               <div
                 // key={product._id}
                 className="w-auto shrink-0 snap-start sm:w-auto lg:w-auto"
               >
-                <ProductCard  />
+                <ProductCard  item={item}/>
               </div>
             ))}
           </div>

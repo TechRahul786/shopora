@@ -39,7 +39,6 @@ const Products = () => {
       setLoading(true);
         setError("");
         const message = await removeProduct(id)
-        console.log("deleted message",message)
         if(message.success){
           setLoading(false)
           setDeleted(true)
@@ -62,7 +61,6 @@ const Products = () => {
         setError("");
 
         const data = await getProducts();
-        console.log(data);
 
         // Supports either an array or common API response formats.
         const productList = Array.isArray(data)

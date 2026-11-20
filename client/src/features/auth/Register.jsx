@@ -84,7 +84,6 @@ const Register = () => {
 
     if (isValid) {
       const res = await register(form);
-      console.log(res);
       if (!res.success) {
          newErrors.finalsubmit = res.message
           setError(newErrors)
@@ -109,7 +108,6 @@ const Register = () => {
 
         navigate('/auth')
       
-      console.log("Form Data:", form);
     } else {
       setSubmitted(false);
     }

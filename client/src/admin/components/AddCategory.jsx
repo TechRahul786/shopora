@@ -96,11 +96,9 @@ const AddCategory = ({setNewAdded,handleCloseModal}) => {
         image: imageUrl,
       };
 
-      console.log('Category data:', finalCategoryData);
 
       const res = await addCategory(finalCategoryData);
 
-      console.log('Category response:', res);
 
       setCategory({
         name: '',

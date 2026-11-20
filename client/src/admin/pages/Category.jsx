@@ -69,7 +69,6 @@ const Category = () => {
   // Delete handler
   const handleremoveCategory = async (id) => {
     try {
-    console.log("Deleting category ID:", id);
 
     const res = await removeCategory(id);
 
@@ -84,8 +83,7 @@ const Category = () => {
     );
   }
   };
-  console.log("flag",flag)
-  console.log("Modal",isModalOpen)
+  
   // Edit handler
   const updateCategory = (id) => {
     
@@ -93,7 +91,6 @@ const Category = () => {
     setFlag(false)
     handleOpenModal()
 
-    console.log("Category ID to update:", id);
   };
 
   // Table columns

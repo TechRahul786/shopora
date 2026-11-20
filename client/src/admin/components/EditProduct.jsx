@@ -5,7 +5,6 @@ import { getProductsById, updateProduct } from "../../services/product";
 
 const EditProduct = ({handleCloseModal,editId}) => {
   const navigate = useNavigate();
-  console.log(editId)
 
   const [formData, setFormData] = useState({
     name: "",
@@ -20,7 +19,6 @@ const EditProduct = ({handleCloseModal,editId}) => {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState("");
   const [uploading, setUploading] = useState(false);
-  console.log(formData)
   
   // Prefill this state with product data from your API.
   useEffect(() => {

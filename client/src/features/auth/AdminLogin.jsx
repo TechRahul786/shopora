@@ -34,7 +34,6 @@ const AdminLogin = () => {
     try {
       const response = await adminLogin(form);
 
-      console.log("Login response:", response);
 
       if (response.success === true) {
         const user = response.user;

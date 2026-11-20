@@ -86,8 +86,6 @@ const AddProduct = () => {
         image: imageUrl,
       };
 
-      console.log("Submitting to backend:", finalProductData);
-
       await addProduct(finalProductData);
     } catch (error) {
       console.error("Error uploading image:", error);

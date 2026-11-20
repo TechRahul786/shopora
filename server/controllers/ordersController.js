@@ -1,33 +1,23 @@
-import Orders from "../models/orders"
-import Product from "../models/product"
+import Orders from "../models/orders.js"
+import Product from "../models/product.js"
 
-export const getOrders = async (req,res,next) =>{
-    const {userId} = req.body
+export const getOrders = async (req, res) => {
+  try {
+    const orders = await Orders.find({
+      userId: req.user._id,
+    }).sort({ createdAt: -1 });
+    res.status(200).json({
+      success: true,
+      orders,
+    });
 
-    try {
-          const orders = await Orders.findById(userId)
-    if(!orders){
-        return res.status(400).json({
-            success:false,
-            message:'User not found'
-        })
-    }
-
-    return res.status(200).json({
-        success:true,
-        message:'Order Found',
-        data:orders
-    })
-        
-    } catch (error) {
-        return res.status(500).json({
-            success:false,
-            message:`Server Error. Unable to get order..${error.message}`
-        })
-    }
-
-}
-
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 export const addOrders = async (req,res,next) =>{
     try {
         const {orderItems,
@@ -57,7 +47,7 @@ export const addOrders = async (req,res,next) =>{
       const product = await Product.findById(item.product);
       if (product) {
         product.stock -= item.quantity;
-        // Ensure stock negative na jaye
+
         if (product.stock < 0) product.stock = 0;
         await product.save();
       }

@@ -1,4 +1,3 @@
-
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -30,13 +29,29 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Database connection middleware
+app.use(async (req, res, next) => {
+  try {
+    await db;
+    next();
+  } catch (error) {
+    console.error("Database connection failed:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Database connection failed",
+    });
+  }
+});
+
 // Routes
 app.use("/api/auth", authRouter);
-app.use("/api/",productRouter)
-app.use("/api/",categoryRouter)
-app.use("/api/",cartRouter)
-app.use("/api/",orderRouter)
+app.use("/api/", productRouter);
+app.use("/api/", categoryRouter);
+app.use("/api/", cartRouter);
+app.use("/api/", orderRouter);
 app.use("/api", paymetRouter);
+
 // Health check
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -45,20 +60,17 @@ app.get("/", (req, res) => {
   });
 });
 
-// Database connection and server startup
-const startServer = async () => {
-  try {
-    await db;
-
-    console.log("Database connected successfully");
-
+// Local development
+if (process.env.NODE_ENV !== "production") {
+  db.then(() => {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
-  } catch (error) {
+  }).catch((error) => {
     console.error("Database connection failed:", error.message);
     process.exit(1);
-  }
-};
+  });
+}
 
-startServer();
+// Vercel serverless export
+export default app;

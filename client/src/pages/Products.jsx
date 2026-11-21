@@ -14,22 +14,27 @@ const Products = () => {
   const [showFilters, setShowFilters] = useState(false);
 
   const productsPerPage = 9;
-  // Filter products by category
+
+  // Helper to get category name from a product (works if product.category is populated or just an ID)
+  const getProductCategoryName = (product) => {
+    if (!product.category) return "";
+    if (typeof product.category === "object") {
+      return product.category.name || "";
+    }
+    const matchedCat = categories.find((cat) => cat._id === product.category);
+    return matchedCat ? matchedCat.name : product.category;
+  };
+
+  // Filter products by category name
   const filteredProducts = useMemo(() => {
     if (selectedCategory === "all") return products;
 
-    return products.filter((product) => {
-      const categoryId =
-        typeof product.category === "object"
-          ? product.category?._id
-          : product.category;
-
-      return (
-        categoryId === selectedCategory ||
-        product.category?.name === selectedCategory
-      );
-    });
-  }, [products, selectedCategory]);
+    return products.filter(
+      (product) =>
+        getProductCategoryName(product).toLowerCase() ===
+        selectedCategory.toLowerCase()
+    );
+  }, [products, categories, selectedCategory]);
 
   // Pagination
   const totalPages = Math.ceil(
@@ -43,8 +48,8 @@ const Products = () => {
     startIndex + productsPerPage
   );
 
-  const handleCategoryChange = (categoryId) => {
-    setSelectedCategory(categoryId);
+  const handleCategoryChange = (categoryName) => {
+    setSelectedCategory(categoryName);
     setCurrentPage(1);
     setShowFilters(false);
   };
@@ -104,30 +109,27 @@ const Products = () => {
 
                 {/* Dynamic Categories */}
                 {categories.map((category) => {
-                  const categoryId = category._id;
+                  const categoryName = category.name;
 
-                  const count = products.filter((product) => {
-                    const id =
-                      typeof product.category === "object"
-                        ? product.category?._id
-                        : product.category;
-
-                    return id === categoryId;
-                  }).length;
+                  const count = products.filter(
+                    (product) =>
+                      getProductCategoryName(product).toLowerCase() ===
+                      categoryName.toLowerCase()
+                  ).length;
 
                   return (
                     <button
-                      key={categoryId}
+                      key={category._id || categoryName}
                       onClick={() =>
-                        handleCategoryChange(categoryId)
+                        handleCategoryChange(categoryName)
                       }
                       className={`w-full flex justify-between items-center px-4 py-3 rounded-lg text-sm transition ${
-                        selectedCategory === categoryId
+                        selectedCategory === categoryName
                           ? "bg-black text-white font-semibold"
                           : "text-gray-600 hover:bg-gray-100"
                       }`}
                     >
-                      <span>{category.name}</span>
+                      <span className="text-left">{categoryName}</span>
                       <span>{count}</span>
                     </button>
                   );
@@ -145,9 +147,7 @@ const Products = () => {
                 <h2 className="text-xl font-semibold text-gray-900">
                   {selectedCategory === "all"
                     ? "All Products"
-                    : categories.find(
-                        (cat) => cat._id === selectedCategory
-                      )?.name}
+                    : selectedCategory}
                 </h2>
 
                 <p className="text-sm text-gray-500 mt-1">

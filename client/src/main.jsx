@@ -8,7 +8,6 @@ import { store } from "./features/store/store.js";
 import AuthInithializer from "./AuthInithializer.jsx";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
     <Provider store={store}>
       <BrowserRouter>
         <AuthInithializer>
@@ -16,5 +15,4 @@ createRoot(document.getElementById("root")).render(
         </AuthInithializer>
       </BrowserRouter>
     </Provider>
-  </StrictMode>,
 );

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FiUploadCloud, FiX, FiArrowLeft, FiPackage } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { getProductsById, updateProduct } from "../../services/product";
+import { getCategory } from "../../services/category";
 
 const EditProduct = ({handleCloseModal,editId}) => {
   const navigate = useNavigate();
@@ -15,12 +16,11 @@ const EditProduct = ({handleCloseModal,editId}) => {
     ratings: "",
     numReviews: "",
   });
-
+  const [category,setCategory] = useState([])
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState("");
   const [uploading, setUploading] = useState(false);
   
-  // Prefill this state with product data from your API.
   useEffect(() => {
 
       async function fetchProduct() {
@@ -28,8 +28,14 @@ const EditProduct = ({handleCloseModal,editId}) => {
         setFormData(product);
         setPreview(product.image);
       }
-    
+
+      async function fetchCategory() {
+        const category = await getCategory()
+        setCategory(category.data)
+      }
+      
       fetchProduct()
+      fetchCategory()
   }, [editId]);
 
   const handleChange = (e) => {
@@ -211,11 +217,9 @@ const EditProduct = ({handleCloseModal,editId}) => {
                 className={inputClass}
                 required
               >
-                <option value="">Select category</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Clothing">Clothing</option>
-                <option value="Shoes">Shoes</option>
-                <option value="Accessories">Accessories</option>
+                {category.map((item,index)=>(
+                    <option value={item.name} key={index}>{item.name}</option>
+                ))}
               </select>
             </div>
 

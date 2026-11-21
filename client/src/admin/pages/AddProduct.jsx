@@ -11,6 +11,7 @@ import {
   FiPlus,
 } from "react-icons/fi";
 import { addProduct } from "../../services/product";
+import { getCategory } from "../../services/category";
 
 const AddProduct = () => {
   const [form, setForm] = useState({
@@ -23,9 +24,10 @@ const AddProduct = () => {
     ratings: "",
     numReviews: "",
   });
+  const [category, setCategory] = useState([]);
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState("");
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({
@@ -40,8 +42,10 @@ const AddProduct = () => {
       setImage(file); // Save the raw file for upload
     }
   };
-
+  const inputClass =
+    "w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-100";
   useEffect(() => {
+   
     if (!image) {
       setPreview("");
       return;
@@ -52,6 +56,15 @@ const AddProduct = () => {
 
     return () => URL.revokeObjectURL(objectUrl);
   }, [image]);
+
+  useEffect(()=>{
+     async function fetchCategory() {
+      const category = await getCategory();
+      setCategory(category.data);
+    }
+
+    fetchCategory();
+  },[])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -103,7 +116,7 @@ const AddProduct = () => {
       setLoading(false);
     }
   };
-  
+
   if (loading) {
     return <div>Loading ..... </div>;
   }
@@ -244,20 +257,21 @@ const AddProduct = () => {
             </label>
 
             <div className="relative">
-              <FiLayers
-                className="absolute left-3 top-3.5 text-gray-400"
-                size={18}
-              />
+             
 
-              <input
-                type="text"
-                id="category"
+              <select
                 name="category"
                 value={form.category}
-                placeholder="e.g. Electronics, Clothing, Footwear"
                 onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 py-3 pl-10 pr-4 text-sm outline-none transition placeholder:text-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
-              />
+                className={inputClass}
+                required
+              >
+                {category.map((item, index) => (
+                  <option value={item.name} key={index}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

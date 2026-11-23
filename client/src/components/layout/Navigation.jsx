@@ -17,7 +17,7 @@ const Navigation = ({ mobileNav, categories = [] }) => {
             {visibleCategories.map((category) => (
               <NavLink
                 key={category._id}
-                to={`/category/${category._id}`}
+                to={`/products/${encodeURIComponent(category.name)}`}
                 className={({ isActive }) =>
                   `max-w-36 break-words text-sm font-medium transition ${
                     isActive

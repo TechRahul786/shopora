@@ -3,7 +3,7 @@ import Carousel from '../components/Carousel'
 import Category from '../components/Category';
 import ProductSlider from '../components/ProductSlider';
 import HeroSection from '../components/HeroSection';
-import {featuredBanners , categories} from '../sample/product'
+import {featuredBanners , } from '../sample/product'
 import UserReview from '../components/UserReview';
 import NewsletterSubscriptionBanner from '../components/NewsletterSubscriptionBanner';
 import FeaturesBar from '../components/FeaturesBar';
@@ -11,6 +11,8 @@ import { useSelector } from 'react-redux';
 
 const Home = () => {
   const products = useSelector((state)=>state.data.products)
+  const categories = useSelector((state)=>state.data.categoies)
+  console.log(categories)
     
   return (
     <div className='flex flex-col gap-3'>

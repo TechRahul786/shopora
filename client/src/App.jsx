@@ -20,6 +20,7 @@ import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import Orders from "./pages/Orders";
 import UserProducts from "./pages/Products";
+import Categories from "./pages/Categories";
 
 
 function App() {
@@ -34,8 +35,10 @@ function App() {
          <Route>
           <Route path="/" element={<UserLayout />}>
             <Route path="/" element={<Home/>}/>
+            <Route path="/categories" element={<Categories />} />
             <Route path="product-details/:id" element={<ProductDetails/>}/>
             <Route path="/products" element={<UserProducts />} />
+            <Route path="/products/:name" element={<UserProducts />} />
           </Route>
         </Route>
 

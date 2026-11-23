@@ -107,7 +107,7 @@ const Header = ({ user, product = [], mobileNav, setMobileNav }) => {
                 searchResults.map((item) => (
                   <Link
                     key={item.id || item._id}
-                    to={`/product/${item.id || item._id}`}
+                    to={`/product-details/${item.id || item._id}`}
                     onClick={() => setIsDropdownOpen(false)}
                     className="flex items-center gap-3 rounded-lg p-2.5 transition hover:bg-gray-50"
                   >

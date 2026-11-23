@@ -22,6 +22,7 @@ const ProductDetails = () => {
     const [quantity,setQuantity] = useState(1)
     const id = useParams().id
     const product = useSelector((state)=>(state.data.products))
+    const user = useSelector((state)=>state.auth.user)
     const filterProduct = product.filter(data=>(
         data._id.includes(id)
     ))
@@ -37,8 +38,13 @@ const ProductDetails = () => {
     }
 
     const cratHandle = async () =>{
+      console.log(user)
+      if(!user){
+         navigate('/auth')
+      }
+     
       const res = await addToCart(id,quantity)
-      navigate('/cart')
+        navigate('/cart')
     }
     
   return (

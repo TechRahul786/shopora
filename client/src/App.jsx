@@ -21,6 +21,7 @@ import OrderSuccess from "./pages/OrderSuccess";
 import Orders from "./pages/Orders";
 import UserProducts from "./pages/Products";
 import Categories from "./pages/Categories";
+import AdminOrders from "./admin/pages/Orders"
 
 
 function App() {
@@ -63,6 +64,7 @@ function App() {
                 <Route path="products" element={<Products/>}/>
                 <Route path="add-product" element={<AddProduct/>}/>
                 <Route path="categories" element={<Category/>}/>
+                <Route path="orders" element={<AdminOrders/>}/>
               </Route>
           </Route>
         

@@ -14,6 +14,30 @@ import {
 const AdminHeader = ({ user, onLogout, onMenuClick }) => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+   const navigationLinks = [
+      {
+        name: "Dashboard",
+        path: "/admin",
+        end: true,
+      },
+      {
+        name: "Add Product",
+        path: "/admin/add-product",
+      },
+      {
+        name: "Show Products",
+        path: "/admin/products",
+      },
+      {
+        name: "Categories",
+        path: "/admin/categories",
+      },
+      {
+        name: "Orders",
+        path: "/admin/orders",
+      },
+    ];
+
 
   const adminName =
     user?.firstName ||
@@ -162,37 +186,17 @@ const AdminHeader = ({ user, onLogout, onMenuClick }) => {
       {mobileMenuOpen && (
         <nav className="border-t border-gray-700 bg-gray-900 px-4 py-3 lg:hidden">
           <div className="flex flex-col gap-1">
-            <Link
-              to="/admin"
+           
+            {navigationLinks.map((link)=>(
+                 <Link
+              to={`${link.path}`}
               onClick={() => setMobileMenuOpen(false)}
               className="rounded-lg px-3 py-3 text-sm transition hover:bg-gray-800"
             >
-              Dashboard
+              {link.name}
             </Link>
-
-            <Link
-              to="/admin/products"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-3 py-3 text-sm transition hover:bg-gray-800"
-            >
-              Manage Products
-            </Link>
-
-            <Link
-              to="/admin/orders"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-3 py-3 text-sm transition hover:bg-gray-800"
-            >
-              Manage Orders
-            </Link>
-
-            <Link
-              to="/admin/users"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-3 py-3 text-sm transition hover:bg-gray-800"
-            >
-              Manage Users
-            </Link>
+            ))}
+            
           </div>
         </nav>
       )}

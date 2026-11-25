@@ -1,11 +1,28 @@
-import api from "./api"
+import api from "./api";
 
-export const addOrder = async(data) =>{
-    const res = await api.post('/order',data)
-    return res.data
-}
+// Add order
+export const addOrder = async (data) => {
+  const res = await api.post("/order", data);
+  return res.data;
+};
 
-export const getMyOrders = async (userId) => {
-  const response = await api.get("/order",userId);
+// Get logged-in user's orders
+export const getMyOrders = async () => {
+  const response = await api.get("/order");
+  return response.data;
+};
+
+// Get all orders (Admin)
+export const getAllOrders = async () => {
+  const response = await api.get("/orders");
+  return response.data;
+};
+
+// Update order status (Admin)
+export const updateOrder = async (id, orderStatus) => {
+  const response = await api.patch(`/orders/${id}/status`, {
+    orderStatus,
+  });
+
   return response.data;
 };

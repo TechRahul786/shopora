@@ -65,3 +65,60 @@ export const addOrders = async (req,res,next) =>{
         })
     }
 }
+
+
+// Get all orders
+export const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Orders.find()
+      .populate("userId", "firstName lastName email")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      orders,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const { orderStatus } = req.body;
+
+    const order = await Orders.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    order.orderStatus = orderStatus;
+
+    // Set delivery date when order is delivered
+    if (orderStatus === "Delivered") {
+      order.deliveredAt = new Date();
+    }
+
+    await order.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Order status updated successfully",
+      order,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

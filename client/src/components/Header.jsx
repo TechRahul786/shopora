@@ -6,17 +6,23 @@ import {
   FaMagnifyingGlass,
   FaBagShopping,
   FaBars,
-  FaXmark
+  FaXmark,
+  FaCartShopping
 } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Header = ({ user, product = [], mobileNav, setMobileNav }) => {
-  const cart = useSelector((state)=>state.cart.items)
+  const cartItems = useSelector((state) => state.cart.items);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const searchRef = useRef(null);
+
+  const cartCount = cartItems.reduce(
+  (total, item) => total + item.quantity,
+  0
+);
 
   // Handle Search Input
   const handleSearch = (e) => {
@@ -164,18 +170,15 @@ const Header = ({ user, product = [], mobileNav, setMobileNav }) => {
           </Link>
 
           {/* Cart */}
-          <Link
-            to="/cart"
-            className="group relative flex flex-col items-center gap-1 rounded-lg px-2 py-1 text-gray-600 transition hover:bg-blue-50 hover:text-blue-600 sm:flex-row sm:gap-2 sm:px-3"
-          >
-            <FaOpencart className="text-xl" />
-            <span className="hidden text-sm font-medium sm:block">
-              Cart
-            </span>
-            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white sm:-right-1">
-              {cart.length}
-            </span>
-          </Link>
+         <Link to="/cart" className="relative">
+  <FaCartShopping size={22} />
+
+  {cartCount > 0 && (
+    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+      {cartCount}
+    </span>
+  )}
+</Link>
 
           {/* Mobile Menu Button */}
           <button

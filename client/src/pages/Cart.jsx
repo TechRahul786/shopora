@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+
 import {
   FaTrash,
   FaPlus,
@@ -17,14 +18,28 @@ import {
 
 import { useNavigate, Link } from "react-router-dom";
 
+import { useDispatch, useSelector } from "react-redux";
+
+import {
+  setCart,
+  removeItem,
+  updateQuantity,
+} from "../features/store/slice/cartSlice";
+
 export default function Cart() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const [cart, setCart] = useState(null);
+  // Redux Cart State
+  const cartItems = useSelector((state) => state.cart.items);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Currency formatter
+  // Track individual product operations
+  const [busyItems, setBusyItems] = useState({});
+
+  // Currency Formatter
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
@@ -33,16 +48,23 @@ export default function Cart() {
     }).format(price || 0);
   };
 
+  // Product ID helper
+  const getProductId = (item) =>
+    item.product?._id || item.productId?._id || item.productId;
+
   // Fetch Cart
   const fetchCart = async () => {
     try {
       setLoading(true);
+      setError(null);
 
       const res = await getCart();
 
-      setCart(res.data.cart);
-      setError(null);
+      dispatch(setCart(res.data.cart));
+
     } catch (err) {
+      console.error("Fetch Cart Error:", err);
+
       setError(
         err.response?.data?.message || "Failed to load cart"
       );
@@ -55,9 +77,19 @@ export default function Cart() {
     fetchCart();
   }, []);
 
+  // Set individual product loading state
+  const setItemLoading = (productId, value) => {
+    setBusyItems((prev) => ({
+      ...prev,
+      [productId]: value,
+    }));
+  };
+
   // Update Quantity
   const handleUpdateQuantity = async (productId, newQuantity) => {
-    if (newQuantity < 1) return;
+    if (newQuantity < 1 || busyItems[productId]) return;
+
+    setItemLoading(productId, true);
 
     try {
       const res = await updateCartItemQuantity(
@@ -65,40 +97,69 @@ export default function Cart() {
         newQuantity
       );
 
-      setCart(res.data.cart);
+      // Sync backend cart response if available
+      if (res.data.cart) {
+        dispatch(setCart(res.data.cart));
+      } else {
+        dispatch(
+          updateQuantity({
+            productId,
+            quantity: newQuantity,
+          })
+        );
+      }
+
     } catch (err) {
+      console.error("Update Quantity Error:", err);
+
       alert(
-        err.response?.data?.message || "Failed to update quantity"
+        err.response?.data?.message ||
+          "Failed to update quantity"
       );
+    } finally {
+      setItemLoading(productId, false);
     }
   };
 
   // Remove Item
   const handleRemoveItem = async (productId) => {
-    try {
-      const res = await removeFromCart(productId);
+    if (busyItems[productId]) return;
 
-      setCart(res.data.cart);
+    setItemLoading(productId, true);
+
+    try {
+      await removeFromCart(productId);
+
+      // Update Redux immediately after successful API response
+      dispatch(removeItem(productId));
+
     } catch (err) {
+      console.error("Remove Cart Item Error:", err);
+
       alert(
-        err.response?.data?.message || "Failed to remove item"
+        err.response?.data?.message ||
+          "Failed to remove item"
       );
+    } finally {
+      setItemLoading(productId, false);
     }
   };
 
   // Calculate Subtotal
   const calculateTotal = () => {
-    if (!cart?.items) return 0;
-
-    return cart.items.reduce((total, item) => {
-      return total + (item.product?.price || 0) * item.quantity;
+    return cartItems.reduce((total, item) => {
+      return (
+        total +
+        (item.product?.price || 0) * item.quantity
+      );
     }, 0);
   };
 
-  const totalItems = cart?.items?.reduce(
+  // Total Items
+  const totalItems = cartItems.reduce(
     (total, item) => total + item.quantity,
     0
-  ) || 0;
+  );
 
   // Loading
   if (loading) {
@@ -121,7 +182,7 @@ export default function Cart() {
 
         <button
           onClick={fetchCart}
-          className="mt-5 px-6 py-3 bg-indigo-600 text-white rounded-xl"
+          className="mt-5 px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition"
         >
           Try Again
         </button>
@@ -130,10 +191,9 @@ export default function Cart() {
   }
 
   // Empty Cart
-  if (!cart?.items || cart.items.length === 0) {
+  if (cartItems.length === 0) {
     return (
       <div className="min-h-[75vh] bg-gray-50 flex items-center justify-center px-4">
-
         <div className="max-w-md w-full bg-white rounded-3xl border border-gray-100 shadow-sm p-10 text-center">
 
           <div className="w-24 h-24 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -145,8 +205,9 @@ export default function Cart() {
           </h2>
 
           <p className="text-gray-500 mt-3 leading-relaxed">
-            Looks like you haven't added anything to your cart yet.
-            Explore our products and find something you love.
+            Looks like you haven't added anything to your
+            cart yet. Explore our products and find something
+            you love.
           </p>
 
           <Link
@@ -158,7 +219,6 @@ export default function Cart() {
           </Link>
 
         </div>
-
       </div>
     );
   }
@@ -196,7 +256,6 @@ export default function Cart() {
             </div>
 
           </div>
-
         </div>
 
         {/* Main Layout */}
@@ -206,27 +265,30 @@ export default function Cart() {
           <div className="lg:col-span-8">
 
             <div className="flex items-center justify-between mb-4">
+
               <h2 className="text-lg font-bold text-gray-800">
                 Your Items
               </h2>
 
               <span className="text-sm text-gray-400">
-                {cart.items.length} Products
+                {cartItems.length} Products
               </span>
+
             </div>
 
             <div className="space-y-4">
 
-              {cart.items.map((item) => {
+              {cartItems.map((item) => {
 
                 const product = item.product;
+                const productId = getProductId(item);
+                const isBusy = !!busyItems[productId];
 
                 if (!product) return null;
 
                 return (
-
                   <div
-                    key={product._id}
+                    key={productId}
                     className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition"
                   >
 
@@ -272,10 +334,10 @@ export default function Cart() {
                           <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden">
 
                             <button
-                              disabled={item.quantity <= 1}
+                              disabled={item.quantity <= 1 || isBusy}
                               onClick={() =>
                                 handleUpdateQuantity(
-                                  product._id,
+                                  productId,
                                   item.quantity - 1
                                 )
                               }
@@ -285,17 +347,18 @@ export default function Cart() {
                             </button>
 
                             <span className="w-10 text-center font-semibold text-gray-800 text-sm">
-                              {item.quantity}
+                              {isBusy ? "..." : item.quantity}
                             </span>
 
                             <button
+                              disabled={isBusy}
                               onClick={() =>
                                 handleUpdateQuantity(
-                                  product._id,
+                                  productId,
                                   item.quantity + 1
                                 )
                               }
-                              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition"
+                              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-30 transition"
                             >
                               <FaPlus size={11} />
                             </button>
@@ -304,17 +367,18 @@ export default function Cart() {
 
                           {/* Remove */}
                           <button
-                            onClick={() => handleRemoveItem(product._id)}
-                            className="flex items-center gap-2 text-red-500 hover:bg-red-50 px-3 py-2 rounded-lg text-sm font-medium transition"
+                            disabled={isBusy}
+                            onClick={() =>
+                              handleRemoveItem(productId)
+                            }
+                            className="flex items-center gap-2 text-red-500 hover:bg-red-50 px-3 py-2 rounded-lg text-sm font-medium transition disabled:opacity-40"
                           >
                             <FaTrash size={12} />
-                            Remove
+                            {isBusy ? "Please wait..." : "Remove"}
                           </button>
 
                         </div>
-
                       </div>
-
                     </div>
 
                     {/* Item Total */}
@@ -325,19 +389,18 @@ export default function Cart() {
                       </span>
 
                       <span className="font-bold text-gray-900">
-                        {formatPrice(product.price * item.quantity)}
+                        {formatPrice(
+                          product.price * item.quantity
+                        )}
                       </span>
 
                     </div>
 
                   </div>
-
                 );
-
               })}
 
             </div>
-
           </div>
 
           {/* Order Summary */}
@@ -406,13 +469,10 @@ export default function Cart() {
               </Link>
 
             </div>
-
           </div>
 
         </div>
-
       </div>
-
     </div>
   );
 }

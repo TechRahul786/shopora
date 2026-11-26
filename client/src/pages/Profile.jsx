@@ -15,6 +15,7 @@ import {
 } from "react-icons/fa";
 import api from "../services/api";
 import { clearState } from "../features/store/slice/authSclice";
+import { removeCart } from "../features/store/slice/cartSlice";
 
 const Profile = () => {
   const { user } = useSelector((state) => state.auth);
@@ -65,6 +66,7 @@ const Profile = () => {
       console.error("Logout failed:", error);
     } finally {
       dispatch(clearState());
+      dispatch(removeCart());
       navigate("/", { replace: true });
     }
   };

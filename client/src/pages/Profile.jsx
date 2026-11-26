@@ -64,7 +64,7 @@ const Profile = () => {
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
-      dispatch(clearState);
+      dispatch(clearState());
       navigate("/", { replace: true });
     }
   };

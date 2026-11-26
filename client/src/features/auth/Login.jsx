@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
-import { Link ,useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { login } from "../../services/auth";
 import { setUser } from "../store/slice/authSclice";
 import { useDispatch } from "react-redux";
 
 const Login = () => {
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -21,7 +21,7 @@ const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [loading,setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const changeHandle = (e) => {
     const { name, value } = e.target;
@@ -39,57 +39,72 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true)
+
+    // Reset previous errors
+    setError({
+      email: "",
+      password: "",
+      finalsubmit: "",
+    });
+
+    // Form validation
     let newErrors = {
       email: "",
       password: "",
       finalsubmit: "",
     };
-    let isValid = true;
 
-    if (!form.email) {
+    if (!form.email.trim()) {
       newErrors.email = "Email is required";
-      isValid = false;
     }
-    if (!form.password) {
+
+    if (!form.password.trim()) {
       newErrors.password = "Password is required";
-      isValid = false;
     }
 
-    setError(newErrors);
+    // Stop submission if validation fails
+    if (newErrors.email || newErrors.password) {
+      setError(newErrors);
+      return;
+    }
 
-    const res = await login(form);
-    if (isValid) {
+    try {
+      setLoading(true);
+      setSubmitted(false);
+
+      const res = await login(form);
+
       if (!res.success) {
-        newErrors.finalsubmit = res.message;
-        setError(newErrors);
-        setLoading(false)
+        setError((prev) => ({
+          ...prev,
+          finalsubmit: res.message || "Invalid email or password",
+        }));
+        return;
       }
-      setLoading(false)
-      setSubmitted(true);
-      setForm({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        conf_password: "",
-      });
-      setError({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        conf_password: "",
-        finalsubmit: "",
-      });
 
-      
-      dispatch(setUser(res.user))
+      // Login successful
+      dispatch(setUser(res.user));
+
+      setSubmitted(true);
+
+      setForm({
+        email: "",
+        password: "",
+      });
 
       navigate("/");
-      setSubmitted(true);
-    } else {
-      setSubmitted(false);
+    } catch (err) {
+      console.error("Login Error:", err);
+
+      setError((prev) => ({
+        ...prev,
+        finalsubmit:
+          err.response?.data?.message ||
+          err.message ||
+          "Something went wrong. Please try again.",
+      }));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -107,13 +122,11 @@ const Login = () => {
         </div>
 
         {/* Success / Error Banners */}
-        {submitted && (
-          <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-xl text-center font-medium">
-            🎉 Login Successful!
-          </div>
-        )}
         {error.finalsubmit && (
-          <div className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-600 text-sm rounded-xl text-center font-medium">
+          <div
+            role="alert"
+            className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-600 text-sm rounded-xl text-center font-medium"
+          >
             {error.finalsubmit}
           </div>
         )}
@@ -181,20 +194,45 @@ const Login = () => {
           </div>
 
           {/* Submit Button */}
-          {
-            loading?( <button
-            type="button"
-            className="w-full mt-2 py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-200 transition-all duration-200 cursor-pointer active:scale-[0.98]"
-          >
-            Loading ...
-          </button>):(
-          
           <button
             type="submit"
-            className="w-full mt-2 py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-200 transition-all duration-200 cursor-pointer active:scale-[0.98]"
+            disabled={loading}
+            className={`w-full mt-2 py-3.5 px-4 text-white font-semibold rounded-xl shadow-lg transition-all duration-200
+    ${
+      loading
+        ? "bg-indigo-400 cursor-not-allowed"
+        : "bg-indigo-600 hover:bg-indigo-700 cursor-pointer active:scale-[0.98]"
+    }`}
           >
-            Sign In
-          </button>)}
+            {loading ? (
+              <span className="flex justify-center items-center gap-2">
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  />
+                </svg>
+                Signing In...
+              </span>
+            ) : (
+              "Sign In"
+            )}
+          </button>
         </form>
 
         {/* Footer / Switch to Register */}

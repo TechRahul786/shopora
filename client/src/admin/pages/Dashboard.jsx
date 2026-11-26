@@ -1,42 +1,64 @@
-import React from "react";
-import { FaIndianRupeeSign ,FaBagShopping,FaUserLarge} from "react-icons/fa6";
-import { TbTruckDelivery } from "react-icons/tb";
-import TopDashCard from "../components/TopDashCard";
-import RevenueAnalytics from "../components/RevenueAnalytics";
-import RevenueCategory from "../components/RevenueCategory";
+import AnalyticsCard from "../components/analytics/AnalyticsCard";
+import RevenueChart from "../components/analytics/RevenueChart";
+import OrdersChart from "../components/analytics/OrdersChart";
+import CategoryChart from "../components/analytics/CategoryChart";
+import RecentOrders from "../components/analytics/RecentOrders";
+
+import {
+  overviewData,
+  revenueData,
+  ordersData,
+  categoryData,
+    recentOrders,
+
+} from "../../sample/analyticsData.js";
 
 const Dashboard = () => {
-  const topContent = [
-    { icon: <FaIndianRupeeSign />, heading: "Total Revenue", value: "Rs 54,000" },
-    { icon: <FaBagShopping />, heading: "Orders", value: "350" },
-    { icon: <TbTruckDelivery/>, heading: "Shipments", value: "250" },
-    { icon: <FaUserLarge/>, heading: "Total Customers", value: "1520" },
-  ];
-
   return (
-    <div className="flex flex-col gap-3">
-    {/* topContent */}
-    <div className="bg-white p-3 rounded-xl shadow-lg">
-         <div className="flex flex-col gap-2 md:flex md:flex-row md:justify-between">
-        {topContent.map((item,index)=>(
-            <TopDashCard icon={item.icon} heading={item.heading} value={item.value} key={index}/>
+    <div className="w-full min-h-screen bg-gray-100 p-4 md:p-6">
+
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">
+            Analytics
+          </h1>
+
+          <p className="text-sm text-gray-500 mt-1">
+            Track your store performance and sales.
+          </p>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-sm text-gray-600">
+          November 2026
+        </div>
+      </div>
+
+      {/* Overview Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+        {overviewData.map((item) => (
+          <AnalyticsCard key={item.type} item={item} />
         ))}
-      
-    </div>
-    </div>
-    {/* RevenueAnalytics and RevenueCategory*/}
-    <div className="flex bg-white p-3 rounded-xl shadow-lg">
-        <div className="w-2/3">
-             <RevenueAnalytics/>
+      </div>
+
+      {/* Revenue and Orders Charts */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
+        <RevenueChart data={revenueData} />
+        <OrdersChart data={ordersData} />
+      </div>
+
+      {/* Category Chart */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div className="lg:col-span-1">
+          <CategoryChart data={categoryData} />
         </div>
-        <div className="w-1/3">
-             <RevenueCategory/>
+
+        <div className="lg:col-span-2">
+          <RecentOrders data={recentOrders} />
         </div>
-       
+      </div>
+
     </div>
-    </div>
-    
-   
   );
 };
 
